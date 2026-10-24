@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guest List Form</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blue:#3b5bdb; --blue-deep:#2c46b5; --tint:#eef2ff; --tint-line:#c9d4fb;
+  --bg:#f6f8fc; --card:#ffffff; --ink:#1b2540; --muted:#6a7590; --line:#e2e8f3;
+  --tile:#f8faff; --err:#d92d20; --ok:#1f9d63;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.top{background:#fff;border-bottom:1px solid var(--line);padding:18px 20px 22px}
+.top-in{max-width:640px;margin:0 auto}
+.brand{display:flex;align-items:center;gap:12px;margin:0 0 22px}
+.logo{width:44px;height:44px;border-radius:12px;background:var(--blue);display:grid;place-items:center;flex:none}
+.logo svg{width:24px;height:24px}
+.brand b{font-size:15px;letter-spacing:.01em}
+.top h1{margin:0 0 8px;font:700 clamp(28px,7vw,36px)/1.15 Inter,system-ui,sans-serif;letter-spacing:-.02em;color:var(--ink)}
+.top p{margin:0;color:var(--muted);max-width:48ch}
+main{max-width:640px;margin:0 auto;padding:20px 16px 56px}
+.progress{position:sticky;top:0;z-index:5;background:var(--bg);padding:12px 0 10px;margin:0 0 10px}
+.bar{height:6px;background:#dde4f3;border-radius:6px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--blue);border-radius:6px;transition:width .3s}
+.progress p{margin:8px 0 0;font-size:14px;color:var(--muted)}
+.card{background:none;border:0;padding:0}
+.step{margin:0 0 12px;background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;scroll-margin-top:70px}
+.acc-h{display:flex;align-items:center;gap:12px;margin:0;padding:16px 18px 8px;font:inherit}
+.num{width:36px;height:36px;border-radius:10px;background:var(--tint);color:var(--blue);display:grid;place-items:center;font-weight:700;font-size:15px;flex:none}
+.step.done .num{background:var(--blue);color:#fff}
+.acc-h .t{flex:1;font:600 18px/1.25 Inter,system-ui,sans-serif;color:var(--ink)}
+.acc-h .st{font-size:13px;color:var(--muted);font-weight:500;white-space:nowrap}
+.step.done .st{color:var(--ok)}
+.step.done .st::before{content:"\2713 "}
+.body{padding:6px 18px 20px}
+.body>.lead,.lead{margin:0 0 18px;color:var(--muted);font-size:15px}
+.sr{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden}
+.f>label.pick{display:inline-block;font-weight:600;margin-bottom:0;border:1px dashed var(--blue);color:var(--blue);border-radius:12px;padding:11px 16px;cursor:pointer;background:var(--tint)}
+.f>label.pick:has(input:focus-visible){outline:2px solid var(--blue);outline-offset:2px}
+.files{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:6px}
+.files li{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:6px 8px;font-size:14px}
+.files img{width:40px;height:40px;object-fit:cover;border-radius:6px;flex:none;background:var(--tile)}
+.files .n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.files .sz{color:var(--muted);font-size:12px}
+.files button{border:0;background:none;color:var(--blue);padding:4px 8px;font-size:20px;line-height:1;border-radius:6px}
+.uerr{color:var(--err);font-size:14px;margin:6px 0 0}
+.uerr:empty{display:none}
+.f{margin:0 0 18px;border:0;padding:0;min-width:0}
+.f>label,.f>legend{display:block;font-weight:600;font-size:15px;margin-bottom:6px;padding:0}
+.req::after,.star::after{content:" *";color:var(--blue)}
+.hint{display:block;font-weight:400;font-size:13px;color:var(--muted);margin-top:2px}
+input[type=text],input[type=email],input[type=tel],input[type=url],input[type=date],input[type=time],input[type=number],textarea,select{
+  width:100%;font:inherit;color:inherit;background:#fff;border:1px solid var(--line);border-radius:10px;padding:11px 12px}
+textarea{min-height:92px;resize:vertical}
+input:focus,textarea:focus,select:focus{outline:2px solid var(--blue);outline-offset:1px;border-color:var(--blue)}
+.opts{display:grid;gap:8px}
+.opt{display:flex;gap:12px;align-items:flex-start;background:var(--tile);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer}
+.opt:has(input:checked){border-color:var(--blue);background:var(--tint);box-shadow:inset 0 0 0 1px var(--blue)}
+.opt:has(input:focus-visible){outline:2px solid var(--blue);outline-offset:2px}
+.opt input{margin-top:4px;accent-color:var(--blue);flex:none}
+.opt small{display:block;color:var(--muted);font-size:13px}
+.bad{outline:2px solid var(--err);outline-offset:6px;border-radius:6px}
+.msg{color:var(--err);font-size:14px;margin:6px 0 0}
+.nav{display:flex;gap:10px;margin-top:18px}
+button{font:inherit;font-weight:600;border-radius:12px;padding:12px 22px;cursor:pointer;border:1px solid var(--blue)}
+.primary{background:var(--blue);color:#fff;flex:1}
+.primary:hover{background:var(--blue-deep)}
+.ghost{background:#fff;color:var(--blue);border-color:var(--tint-line)}
+.link{background:none;border:0;color:var(--blue);text-decoration:underline;padding:6px 0;font-weight:500}
+button:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
+button:disabled{opacity:.6;cursor:wait}
+.thanks{text-align:left;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px 20px}
+.thanks h2{font:700 28px/1.2 Inter,system-ui,sans-serif;letter-spacing:-.01em;color:var(--ink);margin:0 0 10px}
+.demo{margin-top:16px;padding:12px 14px;background:#fff6dc;border:1px solid #e8cf80;border-radius:12px;font-size:14px}
+
+/* guest list specific */
+.verify{margin:12px 0 0;padding:12px 14px;border-radius:12px;font-size:14px;background:var(--tile);border:1px solid var(--line);color:var(--muted)}
+.verify.ok{background:#ecfaf3;border-color:#bfe6d2;color:#15693f}
+.verify.no{background:#fef3f2;border-color:#f7c9c4;color:var(--err)}
+.guest{border:1px solid var(--line);border-radius:12px;padding:12px;margin:0 0 10px;background:#fff;display:grid;gap:8px}
+.guest input,.guest select{padding:9px 10px;font-size:15px}
+.g-top{display:flex;gap:8px;align-items:center}
+.g-no{width:28px;height:28px;border-radius:8px;background:var(--tint);color:var(--blue);display:grid;place-items:center;font-size:13px;font-weight:700;flex:none}
+.g-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
+.pax{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:14px}
+.pax input{width:68px}
+.guest .x{border:0;background:none;color:var(--muted);padding:2px 8px;font-size:22px;line-height:1;border-radius:6px}
+.total{margin:4px 0 14px;font-size:14px;color:var(--muted)}
+details.paste{margin-top:14px;border-top:1px solid var(--line);padding-top:14px}
+details.paste summary{cursor:pointer;font-weight:600;color:var(--blue);margin-bottom:8px}
+details.paste textarea{min-height:120px;margin:6px 0 10px}
+@media(prefers-reduced-motion:reduce){.bar i{transition:none}}
+.lang{margin-left:auto;display:flex;align-items:center;gap:6px;color:var(--muted)}
+.lang svg{width:18px;height:18px;flex:none}
+.lang select{width:auto;padding:7px 10px;font-size:14px;border-radius:10px;cursor:pointer}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <div class="brand"><span class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 4 18.5V20"/><circle cx="10" cy="8" r="3.5"/><path d="M20 20v-1.5a3.5 3.5 0 0 0-2.5-3.35M15.5 4.65a3.5 3.5 0 0 1 0 6.7"/></svg></span><b>Wedding Website</b><div class="lang" data-noi18n><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9S14.5 18.4 12 21c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg><select id="lang" aria-label="Language"></select></div></div>
+    <h1>Guest List Form</h1>
+    <p>Send us the guest list for your invitation. Upload a file you already have, or type guests in one by one. Fields marked * are required.</p>
+  </div>
+</header>
+
+<main>
+  <div class="progress" aria-live="polite">
+    <div class="bar"><i id="barFill"></i></div>
+    <p id="stepLabel" data-noi18n></p>
+  </div>
+
+  <div class="card" id="card">
+  <form id="f" novalidate>
+
+    <!-- 1 ORDER -->
+    <section class="step" data-title="Your order" data-check="order">
+      <h2>Your order</h2>
+      <p class="lead">Enter your order code so this guest list goes to the right order.</p>
+      <div class="f"><label class="req" for="order_code">Order code<span class="hint">You'll find it on the thank-you page and in the confirmation message after sending your order form. Example: WD-0007</span></label><input type="text" id="order_code" name="order_code" required pattern="[A-Za-z0-9\-]{4,12}" title="Letters, numbers and dashes only" autocapitalize="characters" autocomplete="off"></div>
+      <div class="f"><label class="req" for="whatsapp">WhatsApp number used on your order<span class="hint">Use the same number you entered in the order form, e.g. +62 812 3456 7890</span></label><input type="tel" id="whatsapp" name="whatsapp" required autocomplete="tel"></div>
+      <button type="button" class="ghost" id="checkBtn">Check code</button>
+      <div class="verify" id="verifyBox" role="status" data-noi18n hidden></div>
+    </section>
+
+    <!-- 2 METHOD -->
+    <section class="step" data-title="How to add guests">
+      <h2>How to add guests</h2>
+      <p class="lead">Pick whichever is easier for you.</p>
+      <fieldset class="f" data-need><legend class="sr">How to add your guest list</legend>
+        <div class="opts">
+          <label class="opt"><input type="radio" name="method" value="file" required><span>Upload a file<small>Send the list you already have: Excel, CSV, PDF, or a photo.</small></span></label>
+          <label class="opt"><input type="radio" name="method" value="manual"><span>Type guests one by one<small>Enter each guest here. They go straight into our spreadsheet.</small></span></label>
+        </div>
+      </fieldset>
+    </section>
+
+    <!-- 3 GUEST LIST -->
+    <section class="step" data-title="Guest list" data-check="list">
+      <h2>Guest list</h2>
+      <p class="lead" id="noMethod">Choose how to add guests in the previous section.</p>
+
+      <div data-when="method=file">
+        <p class="lead">One row per guest: name, WhatsApp number, group, and number of people. <button type="button" class="link" id="tplBtn">Download CSV template</button></p>
+        <div class="f upload" id="fileBox" data-up="guest_list" data-max="3">
+          <label for="up_guest">Upload your guest list<span class="hint">Excel, CSV, PDF, Word, or photo. Up to 3 files, 3 MB each.</span></label>
+          <label class="pick"><input type="file" id="up_guest" class="sr" accept=".csv,.xlsx,.xls,.pdf,.doc,.docx,.txt,image/*" multiple><span>Choose files</span></label>
+          <ul class="files" data-noi18n></ul><p class="uerr" role="alert"></p>
+        </div>
+        <div class="f"><label for="drive_link">Or paste a Google Sheets / Drive link<span class="hint">Set access to "Anyone with the link". Use this if you don't upload a file.</span></label><input type="url" id="drive_link" name="drive_link" placeholder="https://docs.google.com/..."></div>
+      </div>
+
+      <div data-when="method=manual">
+        <div id="rows"></div>
+        <button type="button" class="ghost" id="addRow">Add guest</button>
+        <p class="total" id="total" data-noi18n></p>
+        <details class="paste">
+          <summary>Have a long list? Paste it all at once</summary>
+          <span class="hint">One guest per line, columns: name, WhatsApp, group, number of people. You can paste straight from Excel or Google Sheets.</span>
+          <textarea id="bulk" placeholder="Budi Santoso, 0812 3456 7890, Friends, 2&#10;Siti Rahma, , Bride's family, 1"></textarea>
+          <button type="button" class="ghost" id="bulkAdd">Add to list</button>
+          <p class="uerr" id="bulkErr" role="alert"></p>
+        </details>
+      </div>
+    </section>
+
+    <!-- 4 CONFIRM -->
+    <section class="step" data-title="Confirm">
+      <h2>Confirm</h2>
+      <p class="lead">Last step. Add a note if you need to, then send.</p>
+      <div class="f"><label for="notes">Notes for us<span class="hint">For example: VIP guests, guests who shouldn't be seated together, or names that need a title.</span></label><textarea id="notes" name="notes"></textarea></div>
+      <fieldset class="f"><legend class="sr">Agreement</legend>
+        <div class="opts">
+          <label class="opt"><input type="checkbox" name="ack" value="Yes" required><span>These guest details are correct, and I'm allowed to share their names and WhatsApp numbers for the invitation.</span></label>
+        </div>
+      </fieldset>
+    </section>
+
+    <div class="nav">
+      <button type="button" class="primary" id="next">Send guest list</button>
+    </div>
+  </form>
+  </div>
+</main>
+
+<script>
+/* ====== SETTINGS: edit these ====== */
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyH45vTj3YZu-InEWxAQaLiyYzMsttKU-VoKLPP76XDh1n_xsCu4FhqrFCK2MVL8dS5/exec';   // Web app URL from Google Apps Script
+const MAX_GUESTS = 300;
+const GROUPS = ["Bride's family","Groom's family",'Friends','Colleagues','Other'];
+/* ================================== */
+
+/* ====== LANGUAGES ====== */
+const LANGS = {en:'English', de:'Deutsch', nl:'Nederlands', fr:'Français', da:'Dansk', ru:'Русский', es:'Español'};
+const I18N = {"de":{"Language":"Sprache","WhatsApp number":"WhatsApp-Nummer","Friend":"Freund/in","Other":"Sonstiges","Choose files":"Dateien auswählen","Yes":"Ja","No":"Nein","Guest":"Gast","English":"Englisch","Agreement":"Einverständnis","Done":"Erledigt","To do":"Offen","{done} of {total} sections done":"{done} von {total} Abschnitten erledigt","{name} is over 3 MB.":"{name} ist größer als 3 MB.","{name} could not be read. Please use JPG or PNG.":"{name} konnte nicht gelesen werden. Bitte JPG oder PNG verwenden.","Remove {name}":"{name} entfernen","Date":"Datum","Time":"Uhrzeit","Sending... keep this page open":"Wird gesendet … Seite bitte geöffnet lassen","Could not send. Check your connection and try again.":"Senden fehlgeschlagen. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.","Guest List Form":"Formular für die Gästeliste","Send us the guest list for your invitation. Upload a file you already have, or type guests in one by one. Fields marked * are required.":"Senden Sie uns die Gästeliste für Ihre Einladung. Laden Sie eine vorhandene Datei hoch oder tragen Sie die Gäste einzeln ein. Mit * markierte Felder sind Pflichtfelder.","Your order":"Ihre Bestellung","Enter your order code so this guest list goes to the right order.":"Geben Sie Ihren Bestellcode ein, damit die Gästeliste der richtigen Bestellung zugeordnet wird.","Order code":"Bestellcode","You'll find it on the thank-you page and in the confirmation message after sending your order form. Example: WD-0007":"Sie finden ihn auf der Dankeseite und in der Bestätigungsnachricht nach dem Absenden des Bestellformulars. Beispiel: WD-0007","WhatsApp number used on your order":"Bei der Bestellung verwendete WhatsApp-Nummer","Use the same number you entered in the order form, e.g. +62 812 3456 7890":"Verwenden Sie dieselbe Nummer wie im Bestellformular, z. B. +62 812 3456 7890","Check code":"Code prüfen","How to add guests":"So fügen Sie Gäste hinzu","Pick whichever is easier for you.":"Wählen Sie, was für Sie einfacher ist.","How to add your guest list":"So fügen Sie Ihre Gästeliste hinzu","Upload a file":"Datei hochladen","Send the list you already have: Excel, CSV, PDF, or a photo.":"Senden Sie die vorhandene Liste: Excel, CSV, PDF oder ein Foto.","Type guests one by one":"Gäste einzeln eintragen","Enter each guest here. They go straight into our spreadsheet.":"Tragen Sie jeden Gast hier ein. Die Angaben landen direkt in unserer Tabelle.","Guest list":"Gästeliste","Choose how to add guests in the previous section.":"Wählen Sie im vorherigen Abschnitt, wie Sie Gäste hinzufügen.","One row per guest: name, WhatsApp number, group, and number of people.":"Eine Zeile pro Gast: Name, WhatsApp-Nummer, Gruppe und Anzahl der Personen.","Download CSV template":"CSV-Vorlage herunterladen","Upload your guest list":"Gästeliste hochladen","Excel, CSV, PDF, Word, or photo. Up to 3 files, 3 MB each.":"Excel, CSV, PDF, Word oder Foto. Bis zu 3 Dateien, je 3 MB.","Or paste a Google Sheets / Drive link":"Oder fügen Sie einen Google-Sheets-/Drive-Link ein","Set access to \"Anyone with the link\". Use this if you don't upload a file.":"Stellen Sie den Zugriff auf „Jeder mit dem Link“ ein. Nutzen Sie dies, wenn Sie keine Datei hochladen.","Add guest":"Gast hinzufügen","Have a long list? Paste it all at once":"Lange Liste? Alles auf einmal einfügen","One guest per line, columns: name, WhatsApp, group, number of people. You can paste straight from Excel or Google Sheets.":"Ein Gast pro Zeile, Spalten: Name, WhatsApp, Gruppe, Anzahl der Personen. Sie können direkt aus Excel oder Google Sheets einfügen.","Add to list":"Zur Liste hinzufügen","Guest name":"Name des Gastes","WhatsApp (optional)":"WhatsApp (optional)","Number of people":"Anzahl der Personen","people":"Personen","Group (optional)":"Gruppe (optional)","Remove guest":"Gast entfernen","Guest WhatsApp":"WhatsApp des Gastes","Guest group":"Gästegruppe","Friends":"Freunde","Colleagues":"Kollegen","Confirm":"Bestätigen","Last step. Add a note if you need to, then send.":"Letzter Schritt. Fügen Sie bei Bedarf eine Notiz hinzu und senden Sie ab.","Notes for us":"Hinweise für uns","For example: VIP guests, guests who shouldn't be seated together, or names that need a title.":"Zum Beispiel: VIP-Gäste, Gäste, die nicht zusammen sitzen sollten, oder Namen, die einen Titel brauchen.","These guest details are correct, and I'm allowed to share their names and WhatsApp numbers for the invitation.":"Diese Gästedaten sind korrekt, und ich darf Namen und WhatsApp-Nummern für die Einladung weitergeben.","Send guest list":"Gästeliste senden","Invitations: {n} · People in total: {pax}":"Einladungen: {n} · Personen insgesamt: {pax}","No guests added yet.":"Noch keine Gäste hinzugefügt.","Checking code...":"Code wird geprüft …","Found it. Order for {couple}.":"Gefunden. Bestellung für {couple}.","That WhatsApp number doesn't match the one used on the order.":"Diese WhatsApp-Nummer stimmt nicht mit der bei der Bestellung verwendeten überein.","We couldn't find that code. Check the code in your order confirmation message.":"Wir konnten diesen Code nicht finden. Prüfen Sie den Code in Ihrer Bestellbestätigung.","Couldn't connect. Check your internet and try again.":"Verbindung fehlgeschlagen. Prüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.","You can add up to 3 files. Use the Drive link for the rest.":"Sie können bis zu 3 Dateien hinzufügen. Nutzen Sie für den Rest den Drive-Link.","Total upload size is too big. Use the Drive link instead.":"Die Gesamtgröße ist zu groß. Nutzen Sie stattdessen den Drive-Link.","Paste your list of names first.":"Fügen Sie zuerst Ihre Namensliste ein.","Up to {max} guests. The rest were not added.":"Maximal {max} Gäste. Die übrigen wurden nicht hinzugefügt.","Tap \"Check code\" first so we can confirm your order.":"Tippen Sie zuerst auf „Code prüfen“, damit wir Ihre Bestellung bestätigen können.","Please upload at least one file, or paste a link below.":"Bitte laden Sie mindestens eine Datei hoch oder fügen Sie unten einen Link ein.","Add at least one guest name.":"Fügen Sie mindestens einen Gastnamen hinzu.","Please choose an option.":"Bitte wählen Sie eine Option.","Thank you.":"Vielen Dank.","Order {code} ({couple}): your guest list was saved. Guests saved: {count}.":"Bestellung {code} ({couple}): Ihre Gästeliste wurde gespeichert. Gespeicherte Gäste: {count}.","Order {code} ({couple}): we received your guest list file.":"Bestellung {code} ({couple}): Wir haben Ihre Gästelisten-Datei erhalten.","To change anything, open this form again with the same order code. The latest submission replaces the previous one.":"Um etwas zu ändern, öffnen Sie dieses Formular erneut mit demselben Bestellcode. Die neueste Übermittlung ersetzt die vorherige.","Letters, numbers and dashes only":"Nur Buchstaben, Ziffern und Bindestriche","Bride's family":"Familie der Braut","Groom's family":"Familie des Bräutigams"},"nl":{"Language":"Taal","WhatsApp number":"WhatsApp-nummer","Friend":"Vriend(in)","Other":"Anders","Choose files":"Bestanden kiezen","Yes":"Ja","No":"Nee","Guest":"Gast","English":"Engels","Agreement":"Akkoord","Done":"Klaar","To do":"Te doen","{done} of {total} sections done":"{done} van {total} secties voltooid","{name} is over 3 MB.":"{name} is groter dan 3 MB.","{name} could not be read. Please use JPG or PNG.":"{name} kon niet worden gelezen. Gebruik JPG of PNG.","Remove {name}":"{name} verwijderen","Date":"Datum","Time":"Tijd","Sending... keep this page open":"Verzenden... houd deze pagina open","Could not send. Check your connection and try again.":"Verzenden mislukt. Controleer uw verbinding en probeer het opnieuw.","Guest List Form":"Formulier voor de gastenlijst","Send us the guest list for your invitation. Upload a file you already have, or type guests in one by one. Fields marked * are required.":"Stuur ons de gastenlijst voor uw uitnodiging. Upload een bestaand bestand of voer de gasten één voor één in. Velden met * zijn verplicht.","Your order":"Uw bestelling","Enter your order code so this guest list goes to the right order.":"Vul uw bestelcode in zodat deze gastenlijst bij de juiste bestelling komt.","Order code":"Bestelcode","You'll find it on the thank-you page and in the confirmation message after sending your order form. Example: WD-0007":"U vindt hem op de bedankpagina en in het bevestigingsbericht na het versturen van het bestelformulier. Voorbeeld: WD-0007","WhatsApp number used on your order":"WhatsApp-nummer die u bij uw bestelling heeft gebruikt","Use the same number you entered in the order form, e.g. +62 812 3456 7890":"Gebruik hetzelfde nummer als in het bestelformulier, bijv. +62 812 3456 7890","Check code":"Code controleren","How to add guests":"Hoe voegt u gasten toe","Pick whichever is easier for you.":"Kies wat voor u het makkelijkst is.","How to add your guest list":"Hoe voegt u uw gastenlijst toe","Upload a file":"Bestand uploaden","Send the list you already have: Excel, CSV, PDF, or a photo.":"Stuur de lijst die u al heeft: Excel, CSV, PDF of een foto.","Type guests one by one":"Gasten één voor één invoeren","Enter each guest here. They go straight into our spreadsheet.":"Voer elke gast hier in. Ze komen direct in onze spreadsheet.","Guest list":"Gastenlijst","Choose how to add guests in the previous section.":"Kies in het vorige gedeelte hoe u gasten toevoegt.","One row per guest: name, WhatsApp number, group, and number of people.":"Eén rij per gast: naam, WhatsApp-nummer, groep en aantal personen.","Download CSV template":"CSV-sjabloon downloaden","Upload your guest list":"Uw gastenlijst uploaden","Excel, CSV, PDF, Word, or photo. Up to 3 files, 3 MB each.":"Excel, CSV, PDF, Word of foto. Maximaal 3 bestanden, elk 3 MB.","Or paste a Google Sheets / Drive link":"Of plak een Google Sheets-/Drive-link","Set access to \"Anyone with the link\". Use this if you don't upload a file.":"Stel de toegang in op \"Iedereen met de link\". Gebruik dit als u geen bestand uploadt.","Add guest":"Gast toevoegen","Have a long list? Paste it all at once":"Lange lijst? Plak alles in één keer","One guest per line, columns: name, WhatsApp, group, number of people. You can paste straight from Excel or Google Sheets.":"Eén gast per regel, kolommen: naam, WhatsApp, groep, aantal personen. U kunt direct plakken uit Excel of Google Sheets.","Add to list":"Aan lijst toevoegen","Guest name":"Naam van de gast","WhatsApp (optional)":"WhatsApp (optioneel)","Number of people":"Aantal personen","people":"personen","Group (optional)":"Groep (optioneel)","Remove guest":"Gast verwijderen","Guest WhatsApp":"WhatsApp van de gast","Guest group":"Gastengroep","Friends":"Vrienden","Colleagues":"Collega's","Confirm":"Bevestigen","Last step. Add a note if you need to, then send.":"Laatste stap. Voeg zo nodig een opmerking toe en verstuur.","Notes for us":"Opmerkingen voor ons","For example: VIP guests, guests who shouldn't be seated together, or names that need a title.":"Bijvoorbeeld: vip-gasten, gasten die niet bij elkaar mogen zitten, of namen met een titel.","These guest details are correct, and I'm allowed to share their names and WhatsApp numbers for the invitation.":"Deze gastgegevens zijn correct en ik mag hun namen en WhatsApp-nummers voor de uitnodiging delen.","Send guest list":"Gastenlijst versturen","Invitations: {n} · People in total: {pax}":"Uitnodigingen: {n} · Totaal aantal personen: {pax}","No guests added yet.":"Nog geen gasten toegevoegd.","Checking code...":"Code wordt gecontroleerd...","Found it. Order for {couple}.":"Gevonden. Bestelling voor {couple}.","That WhatsApp number doesn't match the one used on the order.":"Dit WhatsApp-nummer komt niet overeen met het nummer van de bestelling.","We couldn't find that code. Check the code in your order confirmation message.":"We konden deze code niet vinden. Controleer de code in uw bestelbevestiging.","Couldn't connect. Check your internet and try again.":"Verbinding mislukt. Controleer uw internet en probeer het opnieuw.","You can add up to 3 files. Use the Drive link for the rest.":"U kunt maximaal 3 bestanden toevoegen. Gebruik voor de rest de Drive-link.","Total upload size is too big. Use the Drive link instead.":"De totale uploadgrootte is te groot. Gebruik in plaats daarvan de Drive-link.","Paste your list of names first.":"Plak eerst uw lijst met namen.","Up to {max} guests. The rest were not added.":"Maximaal {max} gasten. De rest is niet toegevoegd.","Tap \"Check code\" first so we can confirm your order.":"Tik eerst op \"Code controleren\" zodat we uw bestelling kunnen bevestigen.","Please upload at least one file, or paste a link below.":"Upload minstens één bestand of plak hieronder een link.","Add at least one guest name.":"Voeg minstens één gastnaam toe.","Please choose an option.":"Kies een optie.","Thank you.":"Bedankt.","Order {code} ({couple}): your guest list was saved. Guests saved: {count}.":"Bestelling {code} ({couple}): uw gastenlijst is opgeslagen. Opgeslagen gasten: {count}.","Order {code} ({couple}): we received your guest list file.":"Bestelling {code} ({couple}): we hebben uw gastenlijstbestand ontvangen.","To change anything, open this form again with the same order code. The latest submission replaces the previous one.":"Wilt u iets wijzigen, open dit formulier dan opnieuw met dezelfde bestelcode. De laatste inzending vervangt de vorige.","Letters, numbers and dashes only":"Alleen letters, cijfers en streepjes","Bride's family":"Familie van de bruid","Groom's family":"Familie van de bruidegom"},"fr":{"Language":"Langue","WhatsApp number":"Numéro WhatsApp","Friend":"Un(e) ami(e)","Other":"Autre","Choose files":"Choisir des fichiers","Yes":"Oui","No":"Non","Guest":"L'invité","English":"Anglais","Agreement":"Accord","Done":"Terminé","To do":"À faire","{done} of {total} sections done":"{done} sur {total} sections terminées","{name} is over 3 MB.":"{name} dépasse 3 Mo.","{name} could not be read. Please use JPG or PNG.":"{name} n'a pas pu être lu. Utilisez du JPG ou du PNG.","Remove {name}":"Supprimer {name}","Date":"Date","Time":"Heure","Sending... keep this page open":"Envoi en cours... gardez cette page ouverte","Could not send. Check your connection and try again.":"Échec de l'envoi. Vérifiez votre connexion et réessayez.","Guest List Form":"Formulaire de liste d'invités","Send us the guest list for your invitation. Upload a file you already have, or type guests in one by one. Fields marked * are required.":"Envoyez-nous la liste d'invités pour votre faire-part. Téléversez un fichier existant ou saisissez les invités un par un. Les champs marqués d'un * sont obligatoires.","Your order":"Votre commande","Enter your order code so this guest list goes to the right order.":"Saisissez votre code de commande afin que cette liste soit associée à la bonne commande.","Order code":"Code de commande","You'll find it on the thank-you page and in the confirmation message after sending your order form. Example: WD-0007":"Vous le trouverez sur la page de remerciement et dans le message de confirmation après l'envoi du bon de commande. Exemple : WD-0007","WhatsApp number used on your order":"Numéro WhatsApp utilisé pour la commande","Use the same number you entered in the order form, e.g. +62 812 3456 7890":"Utilisez le même numéro que dans le bon de commande, p. ex. +62 812 3456 7890","Check code":"Vérifier le code","How to add guests":"Comment ajouter les invités","Pick whichever is easier for you.":"Choisissez ce qui vous est le plus simple.","How to add your guest list":"Comment ajouter votre liste d'invités","Upload a file":"Téléverser un fichier","Send the list you already have: Excel, CSV, PDF, or a photo.":"Envoyez la liste que vous avez déjà : Excel, CSV, PDF ou photo.","Type guests one by one":"Saisir les invités un par un","Enter each guest here. They go straight into our spreadsheet.":"Saisissez chaque invité ici. Ils arrivent directement dans notre tableur.","Guest list":"Liste des invités","Choose how to add guests in the previous section.":"Choisissez dans la section précédente comment ajouter les invités.","One row per guest: name, WhatsApp number, group, and number of people.":"Une ligne par invité : nom, numéro WhatsApp, groupe et nombre de personnes.","Download CSV template":"Télécharger le modèle CSV","Upload your guest list":"Téléverser votre liste d'invités","Excel, CSV, PDF, Word, or photo. Up to 3 files, 3 MB each.":"Excel, CSV, PDF, Word ou photo. Jusqu'à 3 fichiers de 3 Mo chacun.","Or paste a Google Sheets / Drive link":"Ou collez un lien Google Sheets / Drive","Set access to \"Anyone with the link\". Use this if you don't upload a file.":"Réglez l'accès sur « Tous les utilisateurs disposant du lien ». À utiliser si vous ne téléversez pas de fichier.","Add guest":"Ajouter un invité","Have a long list? Paste it all at once":"Longue liste ? Collez tout d'un coup","One guest per line, columns: name, WhatsApp, group, number of people. You can paste straight from Excel or Google Sheets.":"Un invité par ligne, colonnes : nom, WhatsApp, groupe, nombre de personnes. Vous pouvez coller directement depuis Excel ou Google Sheets.","Add to list":"Ajouter à la liste","Guest name":"Nom de l'invité","WhatsApp (optional)":"WhatsApp (facultatif)","Number of people":"Nombre de personnes","people":"personnes","Group (optional)":"Groupe (facultatif)","Remove guest":"Supprimer l'invité","Guest WhatsApp":"WhatsApp de l'invité","Guest group":"Groupe de l'invité","Friends":"Amis","Colleagues":"Collègues","Confirm":"Confirmer","Last step. Add a note if you need to, then send.":"Dernière étape. Ajoutez une note si besoin, puis envoyez.","Notes for us":"Notes pour nous","For example: VIP guests, guests who shouldn't be seated together, or names that need a title.":"Par exemple : invités VIP, invités à ne pas placer ensemble, ou noms nécessitant un titre.","These guest details are correct, and I'm allowed to share their names and WhatsApp numbers for the invitation.":"Ces informations sont exactes et je suis autorisé(e) à partager les noms et numéros WhatsApp pour le faire-part.","Send guest list":"Envoyer la liste d'invités","Invitations: {n} · People in total: {pax}":"Invitations : {n} · Personnes au total : {pax}","No guests added yet.":"Aucun invité ajouté pour le moment.","Checking code...":"Vérification du code...","Found it. Order for {couple}.":"Trouvé. Commande de {couple}.","That WhatsApp number doesn't match the one used on the order.":"Ce numéro WhatsApp ne correspond pas à celui utilisé pour la commande.","We couldn't find that code. Check the code in your order confirmation message.":"Nous n'avons pas trouvé ce code. Vérifiez le code dans votre message de confirmation de commande.","Couldn't connect. Check your internet and try again.":"Connexion impossible. Vérifiez votre connexion internet et réessayez.","You can add up to 3 files. Use the Drive link for the rest.":"Vous pouvez ajouter jusqu'à 3 fichiers. Utilisez le lien Drive pour le reste.","Total upload size is too big. Use the Drive link instead.":"La taille totale est trop importante. Utilisez plutôt le lien Drive.","Paste your list of names first.":"Collez d'abord votre liste de noms.","Up to {max} guests. The rest were not added.":"{max} invités maximum. Les autres n'ont pas été ajoutés.","Tap \"Check code\" first so we can confirm your order.":"Appuyez d'abord sur « Vérifier le code » pour que nous puissions confirmer votre commande.","Please upload at least one file, or paste a link below.":"Téléversez au moins un fichier ou collez un lien ci-dessous.","Add at least one guest name.":"Ajoutez au moins un nom d'invité.","Please choose an option.":"Choisissez une option.","Thank you.":"Merci.","Order {code} ({couple}): your guest list was saved. Guests saved: {count}.":"Commande {code} ({couple}) : votre liste d'invités a été enregistrée. Invités enregistrés : {count}.","Order {code} ({couple}): we received your guest list file.":"Commande {code} ({couple}) : nous avons bien reçu votre fichier de liste d'invités.","To change anything, open this form again with the same order code. The latest submission replaces the previous one.":"Pour modifier quoi que ce soit, rouvrez ce formulaire avec le même code de commande. Le dernier envoi remplace le précédent.","Letters, numbers and dashes only":"Lettres, chiffres et tirets uniquement","Bride's family":"Famille de la mariée","Groom's family":"Famille du marié"},"da":{"Language":"Sprog","WhatsApp number":"WhatsApp-nummer","Friend":"En ven","Other":"Andet","Choose files":"Vælg filer","Yes":"Ja","No":"Nej","Guest":"Gæsten","English":"Engelsk","Agreement":"Accept","Done":"Færdig","To do":"Mangler","{done} of {total} sections done":"{done} af {total} sektioner færdige","{name} is over 3 MB.":"{name} er over 3 MB.","{name} could not be read. Please use JPG or PNG.":"{name} kunne ikke læses. Brug JPG eller PNG.","Remove {name}":"Fjern {name}","Date":"Dato","Time":"Tidspunkt","Sending... keep this page open":"Sender... hold siden åben","Could not send. Check your connection and try again.":"Kunne ikke sende. Tjek din forbindelse og prøv igen.","Guest List Form":"Formular til gæsteliste","Send us the guest list for your invitation. Upload a file you already have, or type guests in one by one. Fields marked * are required.":"Send os gæstelisten til din invitation. Upload en fil, du allerede har, eller skriv gæsterne ind én ad gangen. Felter med * er obligatoriske.","Your order":"Din bestilling","Enter your order code so this guest list goes to the right order.":"Indtast din bestillingskode, så gæstelisten kommer til den rigtige bestilling.","Order code":"Bestillingskode","You'll find it on the thank-you page and in the confirmation message after sending your order form. Example: WD-0007":"Du finder den på tak-siden og i bekræftelsen, efter du har sendt bestillingsformularen. Eksempel: WD-0007","WhatsApp number used on your order":"WhatsApp-nummer brugt på bestillingen","Use the same number you entered in the order form, e.g. +62 812 3456 7890":"Brug det samme nummer som i bestillingsformularen, fx +62 812 3456 7890","Check code":"Tjek kode","How to add guests":"Sådan tilføjer du gæster","Pick whichever is easier for you.":"Vælg det, der er nemmest for dig.","How to add your guest list":"Sådan tilføjer du din gæsteliste","Upload a file":"Upload en fil","Send the list you already have: Excel, CSV, PDF, or a photo.":"Send den liste, du allerede har: Excel, CSV, PDF eller et billede.","Type guests one by one":"Skriv gæster ind én ad gangen","Enter each guest here. They go straight into our spreadsheet.":"Skriv hver gæst ind her. De havner direkte i vores regneark.","Guest list":"Gæsteliste","Choose how to add guests in the previous section.":"Vælg i det forrige afsnit, hvordan du tilføjer gæster.","One row per guest: name, WhatsApp number, group, and number of people.":"Én række pr. gæst: navn, WhatsApp-nummer, gruppe og antal personer.","Download CSV template":"Download CSV-skabelon","Upload your guest list":"Upload din gæsteliste","Excel, CSV, PDF, Word, or photo. Up to 3 files, 3 MB each.":"Excel, CSV, PDF, Word eller billede. Op til 3 filer à 3 MB.","Or paste a Google Sheets / Drive link":"Eller indsæt et Google Sheets-/Drive-link","Set access to \"Anyone with the link\". Use this if you don't upload a file.":"Sæt adgang til \"Alle med linket\". Brug dette, hvis du ikke uploader en fil.","Add guest":"Tilføj gæst","Have a long list? Paste it all at once":"Lang liste? Indsæt det hele på én gang","One guest per line, columns: name, WhatsApp, group, number of people. You can paste straight from Excel or Google Sheets.":"Én gæst pr. linje, kolonner: navn, WhatsApp, gruppe, antal personer. Du kan indsætte direkte fra Excel eller Google Sheets.","Add to list":"Føj til listen","Guest name":"Gæstens navn","WhatsApp (optional)":"WhatsApp (valgfrit)","Number of people":"Antal personer","people":"personer","Group (optional)":"Gruppe (valgfrit)","Remove guest":"Fjern gæst","Guest WhatsApp":"Gæstens WhatsApp","Guest group":"Gæstegruppe","Friends":"Venner","Colleagues":"Kolleger","Confirm":"Bekræft","Last step. Add a note if you need to, then send.":"Sidste trin. Tilføj en note, hvis du har brug for det, og send.","Notes for us":"Noter til os","For example: VIP guests, guests who shouldn't be seated together, or names that need a title.":"For eksempel: VIP-gæster, gæster der ikke bør sidde sammen, eller navne der skal have en titel.","These guest details are correct, and I'm allowed to share their names and WhatsApp numbers for the invitation.":"Disse gæsteoplysninger er korrekte, og jeg må dele deres navne og WhatsApp-numre til invitationen.","Send guest list":"Send gæsteliste","Invitations: {n} · People in total: {pax}":"Invitationer: {n} · Personer i alt: {pax}","No guests added yet.":"Ingen gæster tilføjet endnu.","Checking code...":"Tjekker kode...","Found it. Order for {couple}.":"Fundet. Bestilling for {couple}.","That WhatsApp number doesn't match the one used on the order.":"Det WhatsApp-nummer matcher ikke det, der blev brugt på bestillingen.","We couldn't find that code. Check the code in your order confirmation message.":"Vi kunne ikke finde den kode. Tjek koden i din bestillingsbekræftelse.","Couldn't connect. Check your internet and try again.":"Kunne ikke oprette forbindelse. Tjek dit internet og prøv igen.","You can add up to 3 files. Use the Drive link for the rest.":"Du kan tilføje op til 3 filer. Brug Drive-linket til resten.","Total upload size is too big. Use the Drive link instead.":"Den samlede størrelse er for stor. Brug i stedet Drive-linket.","Paste your list of names first.":"Indsæt først din liste med navne.","Up to {max} guests. The rest were not added.":"Op til {max} gæster. Resten blev ikke tilføjet.","Tap \"Check code\" first so we can confirm your order.":"Tryk først på \"Tjek kode\", så vi kan bekræfte din bestilling.","Please upload at least one file, or paste a link below.":"Upload mindst én fil, eller indsæt et link nedenfor.","Add at least one guest name.":"Tilføj mindst ét gæstenavn.","Please choose an option.":"Vælg en mulighed.","Thank you.":"Tak.","Order {code} ({couple}): your guest list was saved. Guests saved: {count}.":"Bestilling {code} ({couple}): din gæsteliste er gemt. Gemte gæster: {count}.","Order {code} ({couple}): we received your guest list file.":"Bestilling {code} ({couple}): vi har modtaget din gæstelistefil.","To change anything, open this form again with the same order code. The latest submission replaces the previous one.":"Hvis du vil ændre noget, så åbn formularen igen med samme bestillingskode. Den seneste indsendelse erstatter den forrige.","Letters, numbers and dashes only":"Kun bogstaver, tal og bindestreger","Bride's family":"Brudens familie","Groom's family":"Brudgommens familie"},"ru":{"Language":"Язык","WhatsApp number":"Номер WhatsApp","Friend":"Друг","Other":"Другое","Choose files":"Выбрать файлы","Yes":"Да","No":"Нет","Guest":"Гость","English":"Английский","Agreement":"Согласие","Done":"Готово","To do":"Осталось","{done} of {total} sections done":"Готово разделов: {done} из {total}","{name} is over 3 MB.":"{name} больше 3 МБ.","{name} could not be read. Please use JPG or PNG.":"Не удалось прочитать {name}. Используйте JPG или PNG.","Remove {name}":"Удалить {name}","Date":"Дата","Time":"Время","Sending... keep this page open":"Отправка... не закрывайте страницу","Could not send. Check your connection and try again.":"Не удалось отправить. Проверьте соединение и попробуйте снова.","Guest List Form":"Форма списка гостей","Send us the guest list for your invitation. Upload a file you already have, or type guests in one by one. Fields marked * are required.":"Отправьте нам список гостей для вашего приглашения. Загрузите готовый файл или вводите гостей по одному. Поля, отмеченные *, обязательны.","Your order":"Ваш заказ","Enter your order code so this guest list goes to the right order.":"Введите код заказа, чтобы список гостей попал в нужный заказ.","Order code":"Код заказа","You'll find it on the thank-you page and in the confirmation message after sending your order form. Example: WD-0007":"Он указан на странице благодарности и в сообщении с подтверждением после отправки формы заказа. Пример: WD-0007","WhatsApp number used on your order":"Номер WhatsApp, указанный в заказе","Use the same number you entered in the order form, e.g. +62 812 3456 7890":"Укажите тот же номер, что и в форме заказа, например +62 812 3456 7890","Check code":"Проверить код","How to add guests":"Как добавить гостей","Pick whichever is easier for you.":"Выберите то, что удобнее.","How to add your guest list":"Как добавить список гостей","Upload a file":"Загрузить файл","Send the list you already have: Excel, CSV, PDF, or a photo.":"Отправьте готовый список: Excel, CSV, PDF или фото.","Type guests one by one":"Вводить гостей по одному","Enter each guest here. They go straight into our spreadsheet.":"Вводите каждого гостя здесь. Данные сразу попадают в нашу таблицу.","Guest list":"Список гостей","Choose how to add guests in the previous section.":"Выберите способ добавления гостей в предыдущем разделе.","One row per guest: name, WhatsApp number, group, and number of people.":"Одна строка на гостя: имя, номер WhatsApp, группа и количество человек.","Download CSV template":"Скачать шаблон CSV","Upload your guest list":"Загрузите список гостей","Excel, CSV, PDF, Word, or photo. Up to 3 files, 3 MB each.":"Excel, CSV, PDF, Word или фото. До 3 файлов, каждый до 3 МБ.","Or paste a Google Sheets / Drive link":"Или вставьте ссылку на Google Таблицы / Drive","Set access to \"Anyone with the link\". Use this if you don't upload a file.":"Откройте доступ для «Всех, у кого есть ссылка». Используйте, если не загружаете файл.","Add guest":"Добавить гостя","Have a long list? Paste it all at once":"Длинный список? Вставьте всё сразу","One guest per line, columns: name, WhatsApp, group, number of people. You can paste straight from Excel or Google Sheets.":"Один гость на строку, столбцы: имя, WhatsApp, группа, количество человек. Можно вставлять прямо из Excel или Google Таблиц.","Add to list":"Добавить в список","Guest name":"Имя гостя","WhatsApp (optional)":"WhatsApp (необязательно)","Number of people":"Количество человек","people":"чел.","Group (optional)":"Группа (необязательно)","Remove guest":"Удалить гостя","Guest WhatsApp":"WhatsApp гостя","Guest group":"Группа гостя","Friends":"Друзья","Colleagues":"Коллеги","Confirm":"Подтверждение","Last step. Add a note if you need to, then send.":"Последний шаг. При необходимости добавьте примечание и отправьте.","Notes for us":"Примечания для нас","For example: VIP guests, guests who shouldn't be seated together, or names that need a title.":"Например: VIP-гости, гости, которых нельзя сажать вместе, или имена с титулом.","These guest details are correct, and I'm allowed to share their names and WhatsApp numbers for the invitation.":"Данные гостей верны, и я вправе передать их имена и номера WhatsApp для приглашения.","Send guest list":"Отправить список гостей","Invitations: {n} · People in total: {pax}":"Приглашений: {n} · Всего человек: {pax}","No guests added yet.":"Гости пока не добавлены.","Checking code...":"Проверка кода...","Found it. Order for {couple}.":"Найдено. Заказ для {couple}.","That WhatsApp number doesn't match the one used on the order.":"Этот номер WhatsApp не совпадает с номером в заказе.","We couldn't find that code. Check the code in your order confirmation message.":"Мы не нашли такой код. Проверьте код в сообщении с подтверждением заказа.","Couldn't connect. Check your internet and try again.":"Не удалось подключиться. Проверьте интернет и попробуйте снова.","You can add up to 3 files. Use the Drive link for the rest.":"Можно добавить до 3 файлов. Для остальных используйте ссылку на Drive.","Total upload size is too big. Use the Drive link instead.":"Общий размер файлов слишком велик. Используйте ссылку на Drive.","Paste your list of names first.":"Сначала вставьте список имён.","Up to {max} guests. The rest were not added.":"Не более {max} гостей. Остальные не добавлены.","Tap \"Check code\" first so we can confirm your order.":"Сначала нажмите «Проверить код», чтобы мы подтвердили ваш заказ.","Please upload at least one file, or paste a link below.":"Загрузите хотя бы один файл или вставьте ссылку ниже.","Add at least one guest name.":"Добавьте хотя бы одно имя гостя.","Please choose an option.":"Выберите вариант.","Thank you.":"Спасибо.","Order {code} ({couple}): your guest list was saved. Guests saved: {count}.":"Заказ {code} ({couple}): список гостей сохранён. Сохранено гостей: {count}.","Order {code} ({couple}): we received your guest list file.":"Заказ {code} ({couple}): мы получили ваш файл со списком гостей.","To change anything, open this form again with the same order code. The latest submission replaces the previous one.":"Чтобы что-то изменить, откройте эту форму снова с тем же кодом заказа. Последняя отправка заменит предыдущую.","Letters, numbers and dashes only":"Только буквы, цифры и дефисы","Bride's family":"Семья невесты","Groom's family":"Семья жениха"},"es":{"Language":"Idioma","WhatsApp number":"Número de WhatsApp","Friend":"Un amigo","Other":"Otro","Choose files":"Elegir archivos","Yes":"Sí","No":"No","Guest":"El invitado","English":"Inglés","Agreement":"Conformidad","Done":"Hecho","To do":"Pendiente","{done} of {total} sections done":"{done} de {total} secciones completadas","{name} is over 3 MB.":"{name} supera los 3 MB.","{name} could not be read. Please use JPG or PNG.":"No se pudo leer {name}. Usa JPG o PNG.","Remove {name}":"Quitar {name}","Date":"Fecha","Time":"Hora","Sending... keep this page open":"Enviando... mantén esta página abierta","Could not send. Check your connection and try again.":"No se pudo enviar. Comprueba tu conexión e inténtalo de nuevo.","Guest List Form":"Formulario de lista de invitados","Send us the guest list for your invitation. Upload a file you already have, or type guests in one by one. Fields marked * are required.":"Envíanos la lista de invitados para tu invitación. Sube un archivo que ya tengas o escribe los invitados uno por uno. Los campos marcados con * son obligatorios.","Your order":"Tu pedido","Enter your order code so this guest list goes to the right order.":"Introduce tu código de pedido para que esta lista de invitados se asocie al pedido correcto.","Order code":"Código de pedido","You'll find it on the thank-you page and in the confirmation message after sending your order form. Example: WD-0007":"Lo encontrarás en la página de agradecimiento y en el mensaje de confirmación tras enviar el formulario de pedido. Ejemplo: WD-0007","WhatsApp number used on your order":"Número de WhatsApp usado en el pedido","Use the same number you entered in the order form, e.g. +62 812 3456 7890":"Usa el mismo número que indicaste en el formulario de pedido, p. ej. +62 812 3456 7890","Check code":"Comprobar código","How to add guests":"Cómo añadir invitados","Pick whichever is easier for you.":"Elige lo que te resulte más fácil.","How to add your guest list":"Cómo añadir tu lista de invitados","Upload a file":"Subir un archivo","Send the list you already have: Excel, CSV, PDF, or a photo.":"Envía la lista que ya tengas: Excel, CSV, PDF o una foto.","Type guests one by one":"Escribir los invitados uno por uno","Enter each guest here. They go straight into our spreadsheet.":"Escribe cada invitado aquí. Pasan directamente a nuestra hoja de cálculo.","Guest list":"Lista de invitados","Choose how to add guests in the previous section.":"Elige en la sección anterior cómo añadir invitados.","One row per guest: name, WhatsApp number, group, and number of people.":"Una fila por invitado: nombre, número de WhatsApp, grupo y número de personas.","Download CSV template":"Descargar plantilla CSV","Upload your guest list":"Sube tu lista de invitados","Excel, CSV, PDF, Word, or photo. Up to 3 files, 3 MB each.":"Excel, CSV, PDF, Word o foto. Hasta 3 archivos de 3 MB cada uno.","Or paste a Google Sheets / Drive link":"O pega un enlace de Google Sheets / Drive","Set access to \"Anyone with the link\". Use this if you don't upload a file.":"Configura el acceso como «Cualquier persona con el enlace». Úsalo si no subes un archivo.","Add guest":"Añadir invitado","Have a long list? Paste it all at once":"¿Lista larga? Pégala de una vez","One guest per line, columns: name, WhatsApp, group, number of people. You can paste straight from Excel or Google Sheets.":"Un invitado por línea, columnas: nombre, WhatsApp, grupo, número de personas. Puedes pegar directamente desde Excel o Google Sheets.","Add to list":"Añadir a la lista","Guest name":"Nombre del invitado","WhatsApp (optional)":"WhatsApp (opcional)","Number of people":"Número de personas","people":"personas","Group (optional)":"Grupo (opcional)","Remove guest":"Quitar invitado","Guest WhatsApp":"WhatsApp del invitado","Guest group":"Grupo del invitado","Friends":"Amigos","Colleagues":"Compañeros de trabajo","Confirm":"Confirmar","Last step. Add a note if you need to, then send.":"Último paso. Añade una nota si lo necesitas y envía.","Notes for us":"Notas para nosotros","For example: VIP guests, guests who shouldn't be seated together, or names that need a title.":"Por ejemplo: invitados VIP, invitados que no deben sentarse juntos o nombres que necesitan un título.","These guest details are correct, and I'm allowed to share their names and WhatsApp numbers for the invitation.":"Estos datos de invitados son correctos y tengo permiso para compartir sus nombres y números de WhatsApp para la invitación.","Send guest list":"Enviar lista de invitados","Invitations: {n} · People in total: {pax}":"Invitaciones: {n} · Personas en total: {pax}","No guests added yet.":"Aún no has añadido invitados.","Checking code...":"Comprobando código...","Found it. Order for {couple}.":"Encontrado. Pedido de {couple}.","That WhatsApp number doesn't match the one used on the order.":"Ese número de WhatsApp no coincide con el usado en el pedido.","We couldn't find that code. Check the code in your order confirmation message.":"No encontramos ese código. Revisa el código en tu mensaje de confirmación del pedido.","Couldn't connect. Check your internet and try again.":"No se pudo conectar. Comprueba tu conexión a internet e inténtalo de nuevo.","You can add up to 3 files. Use the Drive link for the rest.":"Puedes añadir hasta 3 archivos. Usa el enlace de Drive para el resto.","Total upload size is too big. Use the Drive link instead.":"El tamaño total es demasiado grande. Usa el enlace de Drive.","Paste your list of names first.":"Primero pega tu lista de nombres.","Up to {max} guests. The rest were not added.":"Máximo {max} invitados. El resto no se añadió.","Tap \"Check code\" first so we can confirm your order.":"Pulsa primero «Comprobar código» para que podamos confirmar tu pedido.","Please upload at least one file, or paste a link below.":"Sube al menos un archivo o pega un enlace abajo.","Add at least one guest name.":"Añade al menos un nombre de invitado.","Please choose an option.":"Elige una opción.","Thank you.":"Gracias.","Order {code} ({couple}): your guest list was saved. Guests saved: {count}.":"Pedido {code} ({couple}): tu lista de invitados se ha guardado. Invitados guardados: {count}.","Order {code} ({couple}): we received your guest list file.":"Pedido {code} ({couple}): hemos recibido el archivo de tu lista de invitados.","To change anything, open this form again with the same order code. The latest submission replaces the previous one.":"Para cambiar algo, abre este formulario de nuevo con el mismo código de pedido. El último envío sustituye al anterior.","Letters, numbers and dashes only":"Solo letras, números y guiones","Bride's family":"Familia de la novia","Groom's family":"Familia del novio"}};
+let LANG = 'en';
+const STATIC_VARS = {};
+const TITLE_EN = document.querySelector('.top h1').textContent;
+function T(s, vars){
+  let r = (LANG !== 'en' && I18N[LANG] && I18N[LANG][s]) || s;
+  if (vars) for (const k in vars) r = r.split('{'+k+'}').join(vars[k]);
+  return r;
+}
+function applyLang(root){
+  const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {acceptNode: n =>
+    (n.parentElement && !n.parentElement.closest('[data-noi18n],script,style') && n.nodeValue.trim())
+      ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT});
+  const nodes = []; while (w.nextNode()) nodes.push(w.currentNode);
+  nodes.forEach(n=>{
+    if (n.__en === undefined) n.__en = n.nodeValue;
+    const m = n.__en.match(/^(\s*)([\s\S]*?)(\s*)$/);
+    n.nodeValue = m[1] + T(m[2].replace(/\s+/g,' '), STATIC_VARS) + m[3];
+  });
+  const els = [...root.querySelectorAll('[placeholder],[aria-label],[title]')];
+  if (root.matches && root.matches('[placeholder],[aria-label],[title]')) els.push(root);
+  els.forEach(el=>{
+    if (el.closest('[data-noi18n]')) return;
+    ['placeholder','aria-label','title'].forEach(a=>{
+      if (!el.hasAttribute(a)) return;
+      const k = 'data-en-' + a;
+      if (!el.hasAttribute(k)) el.setAttribute(k, el.getAttribute(a));
+      el.setAttribute(a, T(el.getAttribute(k), STATIC_VARS));
+    });
+  });
+}
+function setLang(l, save){
+  if (!LANGS[l]) l = 'en';
+  LANG = l;
+  document.documentElement.lang = l;
+  document.title = T(TITLE_EN);
+  const sel = document.getElementById('lang');
+  if (sel){ sel.value = l; sel.setAttribute('aria-label', T('Language')); }
+  applyLang(document.body);
+  if (save){ try{ localStorage.setItem('wwf_lang', l); }catch(e){} }
+  if (typeof afterLang === 'function') afterLang();
+}
+function initLang(){
+  // options without a value keep their English text as the submitted value
+  document.querySelectorAll('option:not([value])').forEach(o => o.value = o.textContent);
+  const sel = document.getElementById('lang');
+  sel.innerHTML = Object.entries(LANGS).map(([k,v]) => `<option value="${k}">${v}</option>`).join('');
+  sel.addEventListener('change', () => setLang(sel.value, true));
+  let l = new URLSearchParams(location.search).get('lang');
+  try{ l = l || localStorage.getItem('wwf_lang'); }catch(e){}
+  if (!l) l = (navigator.language || 'en').slice(0,2).toLowerCase();
+  setLang(l);
+}
+function afterLang(){ renderFiles(); update(); renderVerify(); }
+
+const DEMO  = SCRIPT_URL.includes('PASTE_');
+const form  = document.getElementById('f');
+const steps = [...document.querySelectorAll('.step')];
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[<>&"]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));
+let verified = null;   // {couple} once the code is checked
+
+/* ---------- conditional display & progress ---------- */
+function refresh(){
+  document.querySelectorAll('[data-when]').forEach(el=>{
+    const [n,v] = el.dataset.when.split('=');
+    el.hidden = !form.querySelector(`[name="${n}"][value="${v}"]:checked`);
+  });
+  form.querySelectorAll('input,select,textarea').forEach(i => i.disabled = !!i.closest('[hidden]'));
+  $('#noMethod').hidden = !!form.elements.method.value;
+}
+const method = () => form.elements.method.value;
+const guestRows = () => [...$('#rows').querySelectorAll('.guest')];
+const namedRows = () => guestRows().filter(r => r.querySelector('[data-k=name]').value.trim());
+
+function extraOk(step){
+  const k = step.dataset.check;
+  if (k === 'order') return !!verified;
+  if (k === 'list'){
+    if (method() === 'file') return uploads.guest_list.length > 0 || !!$('#drive_link').value.trim();
+    if (method() === 'manual') return namedRows().length > 0;
+    return false;
+  }
+  return true;
+}
+function isComplete(step){
+  for (const g of step.querySelectorAll('[data-need]')){
+    if (!g.closest('[hidden]') && !g.querySelector('input:checked')) return false;
+  }
+  for (const i of step.querySelectorAll('input,select,textarea')){
+    if (!i.disabled && !i.checkValidity()) return false;
+  }
+  return extraOk(step);
+}
+function syncRows(){
+  guestRows().forEach((r,i)=>{
+    r.querySelector('.g-no').textContent = i+1;
+    const has = [...r.querySelectorAll('[data-k]')].some(x => x.dataset.k !== 'pax' && x.value.trim());
+    r.querySelector('[data-k=name]').required = has;
+  });
+  const n = namedRows().length;
+  const pax = namedRows().reduce((s,r)=> s + (parseInt(r.querySelector('[data-k=pax]').value,10) || 1), 0);
+  $('#total').textContent = n ? T('Invitations: {n} · People in total: {pax}',{n,pax}) : T('No guests added yet.');
+}
+function update(){
+  refresh(); syncRows();
+  let done = 0;
+  steps.forEach(s=>{
+    const ok = isComplete(s);
+    s.classList.toggle('done', ok);
+    s.querySelector('.st').textContent = T(ok ? 'Done' : 'To do');
+    if (ok) done++;
+  });
+  $('#barFill').style.width = (done/steps.length*100)+'%';
+  $('#stepLabel').textContent = T('{done} of {total} sections done',{done,total:steps.length});
+}
+
+function buildSections(){
+  steps.forEach((s, idx)=>{
+    const h2 = s.querySelector('h2'), title = h2.textContent;
+    h2.remove();
+    const body = document.createElement('div'); body.className = 'body';
+    [...s.childNodes].forEach(n => body.append(n));
+    const h = document.createElement('h2'); h.className = 'acc-h';
+    h.innerHTML = `<span class="num">${idx+1}</span><span class="t">${title}</span><span class="st" data-noi18n>${T('To do')}</span>`;
+    s.append(h, body);
+  });
+}
+
+/* ---------- check order code (links to the order form) ---------- */
+const normCode = v => v.toUpperCase().replace(/\s+/g,'');
+let vState = null;
+function setVerify(cls, text, vars){ vState = text ? {cls, text, vars} : null; renderVerify(); }
+function renderVerify(){
+  const b = $('#verifyBox');
+  if (!vState){ b.hidden = true; b.textContent = ''; return; }
+  b.hidden = false; b.className = 'verify ' + vState.cls; b.textContent = T(vState.text, vState.vars);
+}
+function lookup(code, wa){
+  if (DEMO){
+    return new Promise(r => setTimeout(()=> r(/^[A-Z]{2}-[A-Z0-9]{4,8}$/.test(code)
+      ? {ok:true, couple:'Anya & Cakra (example)'} : {ok:false, reason:'not_found'}), 500));
+  }
+  return new Promise((res, rej)=>{
+    const cb = 'cb_' + Date.now();
+    const s = document.createElement('script');
+    const done = () => { clearTimeout(t); delete window[cb]; s.remove(); };
+    const t = setTimeout(()=>{ done(); rej(new Error('timeout')); }, 12000);
+    window[cb] = d => { done(); res(d); };
+    s.onerror = () => { done(); rej(new Error('net')); };
+    s.src = `${SCRIPT_URL}?action=lookup&code=${encodeURIComponent(code)}&wa=${encodeURIComponent(wa)}&callback=${cb}`;
+    document.head.append(s);
+  });
+}
+$('#checkBtn').onclick = async () => {
+  const c = $('#order_code'), w = $('#whatsapp');
+  if (!c.checkValidity()){ c.reportValidity(); return; }
+  if (!w.checkValidity()){ w.reportValidity(); return; }
+  const btn = $('#checkBtn'); btn.disabled = true; setVerify('', 'Checking code...');
+  try{
+    const d = await lookup(normCode(c.value), w.value.trim());
+    if (d.ok){ verified = {couple:d.couple}; setVerify('ok', 'Found it. Order for {couple}.', {couple:d.couple}); }
+    else{
+      verified = null;
+      setVerify('no', d.reason === 'wa_mismatch'
+        ? "That WhatsApp number doesn't match the one used on the order."
+        : "We couldn't find that code. Check the code in your order confirmation message.");
+    }
+  }catch(e){
+    verified = null; setVerify('no', "Couldn't connect. Check your internet and try again.");
+  }
+  btn.disabled = false; update();
+};
+['order_code','whatsapp'].forEach(id => $('#'+id).addEventListener('input', ()=>{ verified = null; setVerify('', ''); }));
+const pre = new URLSearchParams(location.search).get('code');
+if (pre) $('#order_code').value = normCode(pre);
+
+/* ---------- file upload ---------- */
+const uploads = {guest_list: []};
+const MAX_TOTAL = 9e6;
+const totalSize = () => uploads.guest_list.reduce((n,f)=>n+f.data.length,0);
+const readDataUrl = file => new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=rej; r.readAsDataURL(file); });
+async function prepare(file){
+  if (!file.type.startsWith('image/')){
+    if (file.size > 3e6) throw new Error(T('{name} is over 3 MB.',{name:file.name}));
+    return {name:file.name, type:file.type || 'application/octet-stream', data:(await readDataUrl(file)).split(',')[1], url:''};
+  }
+  let bmp;
+  try{ bmp = await createImageBitmap(file); }
+  catch(e){ throw new Error(T('{name} could not be read. Please use JPG or PNG.',{name:file.name})); }
+  const k = Math.min(1, 1600/Math.max(bmp.width,bmp.height));
+  const c = document.createElement('canvas');
+  c.width = Math.round(bmp.width*k); c.height = Math.round(bmp.height*k);
+  const ctx = c.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0,0,c.width,c.height); ctx.drawImage(bmp,0,0,c.width,c.height);
+  const url = c.toDataURL('image/jpeg',0.82);
+  return {name:file.name.replace(/\.[^.]+$/,'')+'.jpg', type:'image/jpeg', data:url.split(',')[1], url};
+}
+function renderFiles(){
+  $('#fileBox .files').innerHTML = uploads.guest_list.map((f,i)=>
+    `<li>${f.url?`<img src="${f.url}" alt="">`:''}<span class="n">${esc(f.name)}</span><span class="sz">${Math.round(f.data.length*.75/1024)} KB</span><button type="button" data-rm="${i}" aria-label="${T('Remove {name}',{name:esc(f.name)})}">&times;</button></li>`).join('');
+}
+const fileBox = $('#fileBox'), uerr = fileBox.querySelector('.uerr');
+fileBox.querySelector('input[type=file]').addEventListener('change', async e=>{
+  uerr.textContent = '';
+  for (const file of [...e.target.files]){
+    if (uploads.guest_list.length >= 3){ uerr.textContent = T('You can add up to 3 files. Use the Drive link for the rest.'); break; }
+    try{
+      const f = await prepare(file);
+      if (totalSize() + f.data.length > MAX_TOTAL){ uerr.textContent = T('Total upload size is too big. Use the Drive link instead.'); break; }
+      uploads.guest_list.push(f);
+    }catch(ex){ uerr.textContent = ex.message; }
+  }
+  e.target.value = ''; renderFiles(); update();
+});
+fileBox.addEventListener('click', e=>{
+  const rm = e.target.closest('[data-rm]'); if (!rm) return;
+  uploads.guest_list.splice(+rm.dataset.rm,1); uerr.textContent = '';
+  renderFiles(); update();
+});
+
+/* CSV template is built right in the browser */
+$('#tplBtn').onclick = () => {
+  const csv = "\ufeffGuest Name,WhatsApp Number,Group,Number of People\r\nBudi Santoso,+6281234567890,Friends,2\r\nSiti Rahma,,Bride's family,1\r\n";
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv;charset=utf-8'}));
+  a.download = 'guest-list-template.csv'; a.click(); URL.revokeObjectURL(a.href);
+};
+
+/* ---------- manual entry ---------- */
+function addRow(g = {}){
+  if (guestRows().length >= MAX_GUESTS) return null;
+  const d = document.createElement('div'); d.className = 'guest';
+  d.innerHTML = `<div class="g-top"><span class="g-no"></span><input type="text" data-k="name" placeholder="Guest name" aria-label="Guest name" autocomplete="off"><button type="button" class="x" data-del aria-label="Remove guest">&times;</button></div>
+    <div class="g-row"><input type="tel" data-k="whatsapp" placeholder="WhatsApp (optional)" aria-label="Guest WhatsApp" autocomplete="off"><label class="pax"><input type="number" data-k="pax" min="1" max="20" value="1" inputmode="numeric" aria-label="Number of people"><span>people</span></label></div>
+    <select data-k="group" aria-label="Guest group"><option value="">Group (optional)</option>${GROUPS.map(x=>`<option value="${x}">${x}</option>`).join('')}</select>`;
+  const set = (k,v) => { if (v !== undefined && v !== '') d.querySelector(`[data-k=${k}]`).value = v; };
+  set('name', g.name); set('whatsapp', g.whatsapp); set('group', g.group); set('pax', g.pax);
+  $('#rows').append(d);
+  applyLang(d);
+  return d;
+}
+$('#addRow').onclick = () => { const r = addRow(); if (r) r.querySelector('[data-k=name]').focus(); update(); };
+$('#rows').addEventListener('click', e=>{
+  const del = e.target.closest('[data-del]'); if (!del) return;
+  del.closest('.guest').remove();
+  if (!guestRows().length) addRow();
+  update();
+});
+form.addEventListener('change', e=>{
+  if (e.target.name === 'method' && e.target.value === 'manual' && !guestRows().length){ addRow(); addRow(); addRow(); }
+  update();
+});
+form.addEventListener('input', update);
+
+function matchGroup(t){
+  t = (t||'').toLowerCase();
+  if (!t) return '';
+  if (t.includes('bride') || t.includes('wanita') || t.includes('perempuan')) return GROUPS[0];
+  if (t.includes('groom') || t.includes('pria') || t.includes('laki')) return GROUPS[1];
+  if (t.includes('friend') || t.includes('teman')) return GROUPS[2];
+  if (t.includes('colleague') || t.includes('work') || t.includes('kerja') || t.includes('kantor')) return GROUPS[3];
+  return GROUPS[4];
+}
+$('#bulkAdd').onclick = () => {
+  const lines = $('#bulk').value.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
+  const err = $('#bulkErr'); err.textContent = '';
+  if (!lines.length){ err.textContent = T('Paste your list of names first.'); return; }
+  // drop untouched empty rows so they don't pile up
+  guestRows().forEach(r => { if (![...r.querySelectorAll('[data-k]')].some(x => x.dataset.k!=='pax' && x.value.trim())) r.remove(); });
+  let added = 0;
+  for (const l of lines){
+    const p = l.split(/\t|,|;/).map(x=>x.trim());
+    if (!p[0]) continue;
+    if (!addRow({name:p[0], whatsapp:p[1]||'', group:matchGroup(p[2]), pax:Math.min(20, Math.max(1, parseInt(p[3],10)||1))})){
+      err.textContent = T('Up to {max} guests. The rest were not added.',{max:MAX_GUESTS}); break;
+    }
+    added++;
+  }
+  if (added){ $('#bulk').value = ''; }
+  update();
+};
+
+/* ---------- send ---------- */
+function problem(s){
+  document.querySelectorAll('.msg').forEach(m => m.remove());
+  const say = (el, t) => { el.insertAdjacentHTML('beforeend', `<p class="msg">${t}</p>`); el.scrollIntoView({block:'center',behavior:'smooth'}); };
+  for (const i of s.querySelectorAll('input,select,textarea')){
+    if (!i.disabled && !i.checkValidity()){ i.reportValidity(); return; }
+  }
+  const k = s.dataset.check;
+  if (k === 'order') return say($('#checkBtn').parentElement, T('Tap "Check code" first so we can confirm your order.'));
+  if (k === 'list' && method() === 'file') return say(fileBox, T('Please upload at least one file, or paste a link below.'));
+  if (k === 'list' && method() === 'manual') return say($('#rows'), T('Add at least one guest name.'));
+  const g = [...s.querySelectorAll('[data-need]')].find(x => !x.closest('[hidden]') && !x.querySelector('input:checked'));
+  if (g){ g.classList.add('bad'); say(g, T('Please choose an option.')); }
+}
+$('#next').onclick = async () => {
+  document.querySelectorAll('.bad').forEach(m => m.classList.remove('bad'));
+  const bad = steps.find(s => !isComplete(s));
+  if (bad){ problem(bad); return; }
+  await submit();
+};
+form.addEventListener('submit', e => e.preventDefault());
+
+async function submit(){
+  const btn = $('#next'); btn.disabled = true; btn.textContent = T('Sending... keep this page open');
+  const m = method();
+  const payload = {
+    order_code: normCode($('#order_code').value),
+    whatsapp: $('#whatsapp').value.trim(),
+    method: m,
+    ui_language: LANG,
+    notes: $('#notes').value.trim(),
+    drive_link: m === 'file' ? $('#drive_link').value.trim() : ''
+  };
+  let count = 0;
+  if (m === 'manual'){
+    payload.guests = namedRows().map(r => ({
+      name: r.querySelector('[data-k=name]').value.trim(),
+      whatsapp: r.querySelector('[data-k=whatsapp]').value.trim(),
+      group: r.querySelector('[data-k=group]').value,
+      pax: parseInt(r.querySelector('[data-k=pax]').value,10) || 1
+    }));
+    count = payload.guests.length;
+  }else{
+    payload.files = uploads.guest_list.map(f => ({field:'guest_list', name:f.name, type:f.type, data:f.data}));
+  }
+  try{
+    if (!DEMO) await fetch(SCRIPT_URL, {method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify(payload)});
+  }catch(err){
+    btn.disabled = false; btn.textContent = T('Send guest list');
+    $('#stepLabel').textContent = T('Could not send. Check your connection and try again.');
+    return;
+  }
+  const vars = {code:esc(payload.order_code), couple:esc(verified.couple), count};
+  const msg = m === 'manual'
+    ? T('Order {code} ({couple}): your guest list was saved. Guests saved: {count}.', vars)
+    : T('Order {code} ({couple}): we received your guest list file.', vars);
+  $('#card').innerHTML = `<div class="thanks"><h2>${T('Thank you.')}</h2>
+    <p>${msg} ${T('To change anything, open this form again with the same order code. The latest submission replaces the previous one.')}</p>
+    ${DEMO ? '<div class="demo"><b>Demo mode.</b> SCRIPT_URL is not set yet, so nothing was saved. Paste your Apps Script URL in the settings at the top of the script section.</div>' : ''}</div>`;
+  $('.progress').hidden = true;
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+document.querySelectorAll('label.req .hint').forEach(h=>{
+  h.parentElement.classList.remove('req');
+  h.insertAdjacentHTML('beforebegin','<span class="star"></span>');
+});
+buildSections();
+initLang();
+update();
+</script>
+</body>
+</html>
